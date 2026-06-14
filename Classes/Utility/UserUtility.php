@@ -345,14 +345,14 @@ class UserUtility extends AbstractUtility
      * Login FE-User
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     * @SuppressWarnings(PHPMD.Superglobals)
-     *
      * @TODO: Check Storagepid Parameter
      */
     public static function login(User $user, ?string $storagePids = null)
     {
-        $tsfe = $GLOBALS['TSFE'];
-        $tsfe->fe_user->createUserSession($user->getTempUserArray());
-        $tsfe->fe_user->enforceNewSessionId();
+        $frontendUser = $GLOBALS['TYPO3_REQUEST']->getAttribute('frontend.user');
+        if ($frontendUser instanceof FrontendUserAuthentication) {
+            $frontendUser->createUserSession($user->getTempUserArray());
+            $frontendUser->enforceNewSessionId();
+        }
     }
 }

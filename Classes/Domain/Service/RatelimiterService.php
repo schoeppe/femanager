@@ -11,7 +11,7 @@ use TYPO3\CMS\Core\Crypto\Random;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
-use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 class RatelimiterService implements SingletonInterface
 {
@@ -41,12 +41,11 @@ class RatelimiterService implements SingletonInterface
         $this->limit = (int)$config['limit'];
     }
 
-    /**
-     * @SuppressWarnings(PHPMD.Superglobals)
-     */
-    protected function getTSFE(): TypoScriptFrontendController
+    protected function getFrontendUser(): ?FrontendUserAuthentication
     {
-        return $GLOBALS['TSFE'];
+        $frontendUser = $GLOBALS['TYPO3_REQUEST']->getAttribute('frontend.user');
+
+        return $frontendUser instanceof FrontendUserAuthentication ? $frontendUser : null;
     }
 
     public function isLimited(): bool
@@ -72,12 +71,16 @@ class RatelimiterService implements SingletonInterface
     {
         $this->touchCookie();
 
-        return $this->getTSFE()->fe_user->getSessionData(self::SESSION_KEY);
+        return $this->getFrontendUser()?->getSessionData(self::SESSION_KEY);
     }
 
     public function touchCookie()
     {
-        $feUser = $this->getTSFE()->fe_user;
+        $feUser = $this->getFrontendUser();
+        if ($feUser === null) {
+            return;
+        }
+
         $identifier = $feUser->getSessionData(self::SESSION_KEY);
 
         if ($identifier === null) {
