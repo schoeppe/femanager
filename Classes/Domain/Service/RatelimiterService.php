@@ -10,6 +10,7 @@ use TYPO3\CMS\Core\Context\Context;
 use TYPO3\CMS\Core\Crypto\Random;
 use TYPO3\CMS\Core\SingletonInterface;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Frontend\Controller\TypoScriptFrontendController;
 
 class RatelimiterService implements SingletonInterface
@@ -31,8 +32,11 @@ class RatelimiterService implements SingletonInterface
     public function __construct()
     {
         $this->cache = GeneralUtility::makeInstance(CacheManager::class)->getCache(self::CACHE_IDENTIFIER);
-        $setup = $this->getTSFE()->tmpl->setup;
-        $config = $setup['plugin.']['tx_femanager.']['settings.']['ratelimiter.'] ?? self::DEFAULT_CONFIG;
+        $settings = GeneralUtility::makeInstance(ConfigurationManagerInterface::class)->getConfiguration(
+            ConfigurationManagerInterface::CONFIGURATION_TYPE_SETTINGS,
+            'Femanager'
+        );
+        $config = $settings['ratelimiter'] ?? self::DEFAULT_CONFIG;
         $this->timeframe = (int)$config['timeframe'];
         $this->limit = (int)$config['limit'];
     }

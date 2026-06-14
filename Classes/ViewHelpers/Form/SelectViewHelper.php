@@ -6,8 +6,10 @@ namespace In2code\Femanager\ViewHelpers\Form;
 
 use TYPO3\CMS\Extbase\Configuration\ConfigurationManagerInterface;
 use TYPO3\CMS\Extbase\Reflection\ObjectAccess;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Fluid\Core\Rendering\RenderingContext;
 use TYPO3\CMS\Fluid\ViewHelpers\Form\AbstractFormFieldViewHelper;
+use TYPO3\CMS\Frontend\ContentObject\ContentObjectRenderer;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception;
 use TYPO3Fluid\Fluid\Core\ViewHelper\Exception as FluidViewHelperException;
 
@@ -315,7 +317,8 @@ class SelectViewHelper extends AbstractFormFieldViewHelper
                 );
             }
             $controllerName = strtolower((string)$this->renderingContext->getRequest()->getControllerName());
-            $contentObject = $this->configurationManager->getContentObject();
+            $contentObject = $this->renderingContext->getRequest()->getAttribute('currentContentObject')
+                ?? GeneralUtility::makeInstance(ContentObjectRenderer::class);
             $typoScript = $this->configurationManager->getConfiguration(
                 ConfigurationManagerInterface::CONFIGURATION_TYPE_FULL_TYPOSCRIPT
             );

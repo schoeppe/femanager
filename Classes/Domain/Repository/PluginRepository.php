@@ -7,7 +7,7 @@ namespace In2code\Femanager\Domain\Repository;
 use Exception;
 use In2code\Femanager\Domain\Service\PluginService;
 use In2code\Femanager\Utility\ObjectUtility;
-use PDO;
+use Doctrine\DBAL\ParameterType;
 use TYPO3\CMS\Core\Service\FlexFormService;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -23,7 +23,7 @@ class PluginRepository
     /**
      * @param FlexFormService|null $flexFormService
      */
-    public function __construct(FlexFormService $flexFormService = null)
+    public function __construct(?FlexFormService $flexFormService = null)
     {
         $this->flexFormService = $flexFormService ?? GeneralUtility::makeInstance(FlexFormService::class);
     }
@@ -45,11 +45,11 @@ class PluginRepository
                 ->where(
                     $queryBuilder->expr()->eq(
                         'pid',
-                        $queryBuilder->createNamedParameter($pageIdentifier, PDO::PARAM_INT)
+                        $queryBuilder->createNamedParameter($pageIdentifier, ParameterType::INTEGER)
                     ),
                     $queryBuilder->expr()->eq(
                         'CType',
-                        $queryBuilder->createNamedParameter($cType, PDO::PARAM_STR)
+                        $queryBuilder->createNamedParameter($cType, ParameterType::STRING)
                     )
                 )
                 ->executeQuery();

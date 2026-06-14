@@ -518,7 +518,8 @@ abstract class AbstractController extends ActionController
     public function initializeAction(): void
     {
         $this->user = UserUtility::getCurrentUser();
-        $this->contentObject = $this->configurationManager->getContentObject();
+        $this->contentObject = $this->request->getAttribute('currentContentObject')
+            ?? GeneralUtility::makeInstance(ContentObjectRenderer::class);
         $this->pluginVariables = $this->request->getArguments();
         $this->moduleConfig = [];
         $this->allConfig = $this->configurationManager->getConfiguration(

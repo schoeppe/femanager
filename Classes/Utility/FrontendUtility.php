@@ -7,6 +7,7 @@ namespace In2code\Femanager\Utility;
 use In2code\Femanager\Domain\Model\User;
 use In2code\Femanager\Domain\Model\UserGroup;
 use TYPO3\CMS\Core\Context\Context;
+use TYPO3\CMS\Core\Utility\ArrayUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -109,7 +110,7 @@ class FrontendUtility extends AbstractUtility
     {
         $controllerName = '';
         foreach (self::$pluginNames as $pluginName) {
-            $variables = GeneralUtility::_GPmerged($pluginName);
+            $variables = self::getMergedPluginVariables($pluginName);
             if (!empty($variables['controller'])) {
                 $controllerName = $variables['controller'];
             }
@@ -121,11 +122,26 @@ class FrontendUtility extends AbstractUtility
     {
         $actionName = '';
         foreach (self::$pluginNames as $pluginName) {
-            $variables = GeneralUtility::_GPmerged($pluginName);
+            $variables = self::getMergedPluginVariables($pluginName);
             if (!empty($variables['action'])) {
                 $actionName = $variables['action'];
             }
         }
         return $actionName;
+    }
+
+    protected static function getMergedPluginVariables(string $pluginName): array
+    {
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        if (!$request) {
+            return [];
+        }
+
+        $variables = (array)($request->getQueryParams()[$pluginName] ?? []);
+        $parsedBody = $request->getParsedBody();
+        if (is_array($parsedBody) && is_array($parsedBody[$pluginName] ?? null)) {
+            ArrayUtility::mergeRecursiveWithOverrule($variables, $parsedBody[$pluginName]);
+        }
+        return $variables;
     }
 }

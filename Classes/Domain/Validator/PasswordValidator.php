@@ -102,7 +102,7 @@ class PasswordValidator extends AbstractValidatorExtbase
      */
     protected function passwordFieldsAdded()
     {
-        $flexFormValues = GeneralUtility::xml2array($this->cObj->data['pi_flexform']);
+        $flexFormValues = GeneralUtility::xml2array((string)($this->cObj->data['pi_flexform'] ?? ''));
         if (is_array($flexFormValues)) {
             $fields =
                 $flexFormValues['data'][$this->actionName]['lDEF']['settings.' . $this->actionName . '.fields']['vDEF']
@@ -113,8 +113,7 @@ class PasswordValidator extends AbstractValidatorExtbase
             }
         }
 
-        // password fields are not added to form
-        return false;
+        return true;
     }
 
     /**
@@ -129,11 +128,18 @@ class PasswordValidator extends AbstractValidatorExtbase
             'Femanager',
             null
         );
-        $this->cObj = $this->configurationManager->getContentObject();
-        $this->piVars = $this->cObj->getRequest()->getParsedBody()[$pluginName] ??
-            $this->cObj->getRequest()->getQueryParams()[$pluginName] ?? null;
+        $request = $GLOBALS['TYPO3_REQUEST'] ?? null;
+        $this->cObj = $request?->getAttribute('currentContentObject')
+            ?? GeneralUtility::makeInstance(ContentObjectRenderer::class);
+        if ($request && method_exists($this->cObj, 'setRequest')) {
+            $this->cObj->setRequest($request);
+        }
+        $parsedBody = $request?->getParsedBody();
+        $this->piVars = (is_array($parsedBody) ? ($parsedBody[$pluginName] ?? null) : null)
+            ?? $request?->getQueryParams()[$pluginName]
+            ?? [];
 
-        $this->actionName = $this->piVars['__referrer']['@action'];
+        $this->actionName = $this->piVars['__referrer']['@action'] ?? '';
     }
 
     public function setContentObjectRenderer(ContentObjectRenderer $cObj): void
