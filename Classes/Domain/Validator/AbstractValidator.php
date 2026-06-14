@@ -200,7 +200,7 @@ abstract class AbstractValidator extends AbstractValidatorExtbase
     /**
      * Validation for Unique in sysfolder
      */
-    protected function validateUniquePage(string $value, string $field, User $user = null): bool
+    protected function validateUniquePage(string $value, string $field, ?User $user = null): bool
     {
         $foundUser = $this->userRepository->checkUniquePage($field, $value, $user);
         return !is_object($foundUser);
@@ -209,7 +209,7 @@ abstract class AbstractValidator extends AbstractValidatorExtbase
     /**
      * Validation for Unique in the db
      */
-    protected function validateUniqueDb(string $value, string $field, User $user = null): bool
+    protected function validateUniqueDb(string $value, string $field, ?User $user = null): bool
     {
         $foundUser = $this->userRepository->checkUniqueDb($field, $value, $user);
 

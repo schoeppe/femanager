@@ -41,7 +41,7 @@ class UserController extends AbstractFrontendController
         return $this->htmlResponse();
     }
 
-    public function showAction(User $user = null): ResponseInterface
+    public function showAction(?User $user = null): ResponseInterface
     {
         $this->view->assign('user', $this->getUser($user));
         $this->assignForAll();
@@ -131,7 +131,7 @@ class UserController extends AbstractFrontendController
     /**
      * @return User
      */
-    protected function getUser(User $user = null)
+    protected function getUser(?User $user = null)
     {
         if ($user === null) {
             if (is_numeric($this->settings['show']['user'])) {

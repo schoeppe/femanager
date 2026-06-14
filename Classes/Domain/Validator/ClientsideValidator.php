@@ -417,7 +417,7 @@ class ClientsideValidator extends AbstractValidator
     /**
      * @return ClientsideValidator
      */
-    public function setUser(User $user = null)
+    public function setUser(?User $user = null)
     {
         $this->user = $user;
 

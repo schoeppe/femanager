@@ -122,7 +122,7 @@ class ConfigurationUtility extends AbstractUtility
      * @return string
      * @codeCoverageIgnore
      */
-    public static function getConfiguration(string $path = '', string $pluginName = null)
+    public static function getConfiguration(string $path = '', ?string $pluginName = null)
     {
         $configurationManager = GeneralUtility::makeInstance(ConfigurationManagerInterface::class);
         $typoscript = $configurationManager->getConfiguration(

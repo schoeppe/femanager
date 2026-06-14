@@ -104,7 +104,7 @@ class UserRepository extends Repository
      * @param $value
      * @param User $user Existing User
      */
-    public function checkUniqueDb($field, $value, User $user = null): ?User
+    public function checkUniqueDb($field, $value, ?User $user = null): ?User
     {
         $query = $this->createQuery();
         $this->ignoreEnableFieldsAndStoragePageAndStarttime($query);
@@ -130,7 +130,7 @@ class UserRepository extends Repository
      * @param $value
      * @param User $user Existing User
      */
-    public function checkUniquePage($field, $value, User $user = null): ?User
+    public function checkUniquePage($field, $value, ?User $user = null): ?User
     {
         $query = $this->createQuery();
         $query->getQuerySettings()->setIgnoreEnableFields(true);
