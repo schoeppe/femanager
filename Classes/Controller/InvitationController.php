@@ -31,6 +31,7 @@ use TYPO3\CMS\Extbase\Annotation\Validate;
  */
 class InvitationController extends AbstractFrontendController
 {
+
     /**
      * action new
      */
@@ -102,6 +103,7 @@ class InvitationController extends AbstractFrontendController
     {
         $this->userRepository->add($user);
         $this->persistenceManager->persistAll();
+        $this->processUploadedImage($user);
         $this->addFlashMessage(LocalizationUtility::translate('createAndInvited'));
         $this->logUtility->log(Log::STATUS_INVITATIONPROFILECREATED, $user);
 
@@ -247,6 +249,10 @@ class InvitationController extends AbstractFrontendController
     public function deleteAction(int $user, string $hash = ''): ResponseInterface
     {
         $user = $this->userRepository->findByUid($user);
+
+        if($this->addVariablesForActionConfirmation(true, $user, 'invitationConfirmationRefused')) {
+            return $this->htmlResponse();
+        };
 
         if ($user !== null && HashUtility::validHash($hash, $user)) {
             $this->logUtility->log(Log::STATUS_PROFILEDELETE, $user);
