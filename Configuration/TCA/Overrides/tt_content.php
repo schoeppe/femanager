@@ -8,25 +8,23 @@ defined('TYPO3') or die();
 $plugins = ['Registration', 'Edit', 'List', 'Detail', 'Invitation', 'ResendConfirmationMail'];
 
 foreach ($plugins as $plugin) {
-    $CType = 'femanager_' . strtolower($plugin);
-    $flexformFile = 'FlexForm' . ucfirst($plugin);
-
-    ExtensionUtility::registerPlugin(
-        'femanager',
+    $contentTypeName = ExtensionUtility::registerPlugin(
+        'Femanager',
         $plugin,
-        'LLL:EXT:femanager/Resources/Private/Language/locallang_mod.xlf:' . $CType . '.title',
+        'LLL:EXT:femanager/Resources/Private/Language/locallang_mod.xlf:femanager_' . strtolower($plugin) . '.title',
         null,
         'femanager'
     );
+    $flexformFile = 'FlexForm' . ucfirst($plugin);
 
     if ($plugin !== 'ResendConfirmationMail') {
         ExtensionManagementUtility::addPiFlexFormValue(
             '*',
             'FILE:EXT:femanager/Configuration/FlexForms/' . $flexformFile . '.xml',
-            $CType
+            $contentTypeName
         );
 
-        $GLOBALS['TCA']['tt_content']['types'][$CType]['showitem'] = '
+        $GLOBALS['TCA']['tt_content']['types'][$contentTypeName]['showitem'] = '
         --div--;LLL:EXT:core/Resources/Private/Language/Form/locallang_tabs.xlf:general,
             --palette--;;general,
             --palette--;;headers,
