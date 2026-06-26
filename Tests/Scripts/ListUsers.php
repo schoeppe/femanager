@@ -2,7 +2,7 @@
 
 namespace In2code\Femanager\Tests\Scripts;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Database\Query\Restriction\HiddenRestriction;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
@@ -49,7 +49,7 @@ class ListUsers
                     );
                 }
             }
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             $content = 'error: ' . $e->getMessage();
         }
 
@@ -83,7 +83,7 @@ class ListUsers
                     true
                 );
             }
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             $content = 'error: ' . $e->getMessage();
         }
 
@@ -114,7 +114,7 @@ class ListUsers
                     true
                 );
             }
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             $content = 'error: ' . $e->getMessage();
         }
 

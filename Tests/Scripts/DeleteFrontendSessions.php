@@ -2,7 +2,7 @@
 
 namespace In2code\Femanager\Tests\Scripts;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use TYPO3\CMS\Core\Database\ConnectionPool;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
@@ -24,7 +24,7 @@ class DeleteFrontendSessions
             $queryBuilder->executeStatement();
 
             return 'All frontend sessions deleted';
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             $errorMsg = $e->getMessage();
         }
 

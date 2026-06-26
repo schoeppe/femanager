@@ -2,7 +2,7 @@
 
 namespace In2code\Femanager\Tests\Scripts;
 
-use Doctrine\DBAL\DBALException;
+use Doctrine\DBAL\Exception;
 use In2code\Femanager\Domain\Model\User;
 use In2code\Femanager\Utility\HashUtility;
 use TYPO3\CMS\Core\Database\ConnectionPool;
@@ -147,7 +147,7 @@ class UserLinks
             ->setMaxResults(1);
         try {
             return $queryBuilder->executeQuery()->fetchAssociative();
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             $errorMsg = $e->getMessage();
 
             return 'Could not fetch fe_users. ' . $errorMsg;
@@ -174,7 +174,7 @@ class UserLinks
                 $row = $res->fetchAssociative();
                 $content = $row['username'];
             }
-        } catch (DBALException $e) {
+        } catch (Exception $e) {
             $content = 'error: ' . $e->getMessage();
         }
 

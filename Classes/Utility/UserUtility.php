@@ -336,7 +336,7 @@ class UserUtility extends AbstractUtility
 
         $row = $queryBuilder->select('ses_id')
             ->from('fe_sessions')->where($queryBuilder->expr()->eq('ses_userid', (int)$user->getUid()))->executeQuery()
-            ->fetch();
+            ->fetchAssociative();
 
         return !empty($row['ses_id']);
     }
