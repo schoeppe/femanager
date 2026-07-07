@@ -121,7 +121,7 @@ class ConfigurationUtility extends AbstractUtility
     {
         $configuration = self::getExtensionConfiguration();
 
-        return $configuration['useFluidMail'] === '1';
+        return ($configuration['useFluidMail'] ?? '0') === '1';
     }
 
     /**

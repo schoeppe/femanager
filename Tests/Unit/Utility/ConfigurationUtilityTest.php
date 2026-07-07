@@ -57,4 +57,31 @@ class ConfigurationUtilityTest extends UnitTestCase
         $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['femanager'] = $configuration;
         self::assertTrue(ConfigurationUtility::isDisableLogActive());
     }
+
+    /**
+     * @SuppressWarnings(PHPMD.Superglobals)
+     * @covers ::useFluidMail
+     * @covers \In2code\Femanager\Utility\AbstractUtility::getExtensionConfiguration
+     */
+    public function testUseFluidMailIsActive(): void
+    {
+        $configuration = [
+            'useFluidMail' => '1',
+        ];
+        // @extensionScannerIgnoreLine
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['femanager'] = $configuration;
+        self::assertTrue(ConfigurationUtility::useFluidMail());
+    }
+
+    /**
+     * @SuppressWarnings(PHPMD.Superglobals)
+     * @covers ::useFluidMail
+     * @covers \In2code\Femanager\Utility\AbstractUtility::getExtensionConfiguration
+     */
+    public function testUseFluidMailDefaultsToInactive(): void
+    {
+        // @extensionScannerIgnoreLine
+        $GLOBALS['TYPO3_CONF_VARS']['EXTENSIONS']['femanager'] = [];
+        self::assertFalse(ConfigurationUtility::useFluidMail());
+    }
 }
