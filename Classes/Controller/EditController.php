@@ -25,6 +25,7 @@ use TYPO3\CMS\Core\Type\ContextualFeedbackSeverity;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 use TYPO3\CMS\Extbase\Annotation\Validate;
 use TYPO3\CMS\Extbase\Http\ForwardResponse;
+use TYPO3\CMS\Frontend\Authentication\FrontendUserAuthentication;
 
 /**
  * Class EditController
@@ -43,6 +44,7 @@ class EditController extends AbstractFrontendController
         $this->view->assignMultiple([
             'user' => $this->user,
             'allUserGroups' => $this->allUserGroups,
+            'usergroupFieldMode' => $this->userGroupSanitizationService->getFieldRenderMode($this->settings['edit'] ?? []),
             'token' => $token,
         ]);
         $this->addDefaultViewVariables();
@@ -85,6 +87,12 @@ class EditController extends AbstractFrontendController
             ConfigurationUtility::getValue('edit./forceValues./beforeAnyConfirmation.', $this->config)
         );
 
+        $user = $this->userGroupSanitizationService->sanitize(
+            $user,
+            $this->settings['edit'] ?? [],
+            $this->userGroupSanitizationService->getOriginalUsergroupUids($user)
+        );
+
         $this->emailForUsername($user);
         UserUtility::convertPassword(
             $user,
@@ -106,13 +114,33 @@ class EditController extends AbstractFrontendController
     }
 
     /**
+     * Confirm, refuse or silently refuse a profile change request.
+     *
+     * All three actions are admin actions and therefore always require a valid adminHash,
+     * independently of the confirmAdminConfirmation setting
+     *
      * @param User $user User object
      * @param string $hash
      * @param string $status could be "confirm", "refuse", "silentRefuse"
+     * @param string|null $adminHash Hash to authorize the admin action
      */
-    public function confirmUpdateRequestAction(User $user, $hash, $status = 'confirm'): ResponseInterface
-    {
+    public function confirmUpdateRequestAction(
+        User $user,
+        string $hash,
+        string $status = 'confirm',
+        ?string $adminHash = null
+    ): ResponseInterface {
         $this->view->assign('user', $user);
+
+        if (HashUtility::validHash((string)$adminHash, $user, 'admin') === false) {
+            $this->addFlashMessage(
+                LocalizationUtility::translate('error_not_authorized'),
+                '',
+                ContextualFeedbackSeverity::ERROR
+            );
+            return $this->htmlResponse(null);
+        }
+
         if (!HashUtility::validHash($hash, $user) || !$user->getTxFemanagerChangerequest()) {
             $this->addFlashMessage(
                 LocalizationUtility::translate('updateFailedProfile'),
@@ -162,6 +190,12 @@ class EditController extends AbstractFrontendController
                 }
             }
         }
+
+        $user = $this->userGroupSanitizationService->sanitize(
+            $user,
+            $this->settings['edit'] ?? [],
+            $this->userGroupSanitizationService->getOriginalUsergroupUids($user)
+        );
 
         if (!empty($this->config['edit.']['forceValues.']['onAdminConfirmation.'])) {
             $user = FrontendUtility::forceValues($user, $this->config['edit.']['forceValues.']['onAdminConfirmation.']);
@@ -218,6 +252,8 @@ class EditController extends AbstractFrontendController
         $this->logUtility->log(Log::STATUS_PROFILEDELETE, $user);
         $this->addFlashMessage(LocalizationUtility::translateByState(Log::STATUS_PROFILEDELETE));
         $this->userRepository->remove($user);
+        $this->invalidateSessionCookie();
+
         return $this->redirectByAction('delete', 'redirect', 'edit');
     }
 
@@ -249,5 +285,13 @@ class EditController extends AbstractFrontendController
             'confirmUpdateRequest' => 'edit',
             'delete' => 'edit',
         ];
+    }
+
+    protected function invalidateSessionCookie(): void
+    {
+        $frontendUser = $this->request->getAttribute('frontend.user');
+        if ($frontendUser instanceof FrontendUserAuthentication) {
+            $frontendUser->logoff();
+        }
     }
 }

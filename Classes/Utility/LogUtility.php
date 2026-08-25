@@ -39,7 +39,7 @@ class LogUtility
 
             if ($user) {
                 $log->setUser($user);
-                $log->setPid($user->getPid());
+                $log->setPid($user->getPid() ?? 0);
             }
 
             if (!empty($additionalProperties)) {
@@ -59,7 +59,6 @@ class LogUtility
             $this->logRepository->add($log);
             // persist new log (in case an exception is thrown later the log is not persisted)
             $this->persistenceManager->persistAll();
-
         }
 
         $this->eventDispatcher->dispatch(new UserLogEvent($user, $state, $additionalProperties));

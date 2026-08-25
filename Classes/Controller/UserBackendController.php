@@ -95,12 +95,13 @@ class UserBackendController extends AbstractController
 
     public function logAction(array $filter = []): ResponseInterface
     {
-        $this->moduleTemplate->assignMultiple([
+        $this->moduleTemplate->assignMultiple(
+            [
                 'users' => $this->userRepository->findAllWithoutDeleted(),
                 'groupedLogEntries' => $this->groupLogEntriesDay($this->logRepository->findByFilter($filter)),
                 'action' => 'log',
                 'logEnabled' => !ConfigurationUtility::isDisableLogActive(),
-                'filter' => array_filter($filter)
+                'filter' => array_filter($filter),
             ]
         );
 
@@ -322,6 +323,7 @@ class UserBackendController extends AbstractController
                 'tx_femanager_registration' => [
                     'user' => $userIdentifier,
                     'hash' => HashUtility::createHashForUser($user),
+                    'adminHash' => HashUtility::createHashForUser($user, 'admin'),
                     'status' => $status,
                     'action' => 'confirmCreateRequest',
                     'controller' => 'New',

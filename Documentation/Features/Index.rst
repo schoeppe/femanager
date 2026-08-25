@@ -25,6 +25,7 @@ See some features or best practice parts of the extension femanager.
    FillEmailAsUsername/Index
    NewFields/Index
    NewValidators/Index
+   UsergroupSecurity/Index
    AutoConfirmation/Index
    ConfirmUserConfirmationRefused/Index
    Finishers/Index
@@ -110,4 +111,3 @@ General
 - Supports static_info_tables
 - Extend this extension with new validators or new fields in fe_users (see example in best practice section) or use some SignalSlots
 - Extension uses namespaces (so TYPO3 version 6.0 or higher is needed)
-
